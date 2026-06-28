@@ -59,7 +59,7 @@ export class StockService {
       });
 
       if (!inventory) {
-        this.logger.error(
+        this.logger.warn(
           `No inventory for product ${productId} in warehouse ${warehouseId}`,
         );
         throw new NotFoundException(
@@ -67,7 +67,7 @@ export class StockService {
         );
       }
       if (inventory.quantity < quantity) {
-        this.logger.error(
+        this.logger.warn(
           `Insufficient stock for product ${productId} in warehouse ${warehouseId}: have ${inventory.quantity}, tried to remove ${quantity}`,
         );
         throw new BadRequestException(
@@ -105,6 +105,8 @@ export class StockService {
     }
 
     return this.prisma.$transaction(async (tx) => {
+      // Ensure the destination warehouse exists
+      await this.ensureWarehouseExists(tx, toWarehouseId);
       // 1. Check source has enough stock
       const source = await tx.inventory.findUnique({
         where: {
@@ -113,7 +115,7 @@ export class StockService {
       });
 
       if (!source) {
-        this.logger.error(
+        this.logger.warn(
           `No inventory for product ${productId} in source warehouse ${fromWarehouseId}`,
         );
         throw new NotFoundException(
@@ -121,7 +123,7 @@ export class StockService {
         );
       }
       if (source.quantity < quantity) {
-        this.logger.error(
+        this.logger.warn(
           `Insufficient stock for product ${productId} in warehouse ${fromWarehouseId}: have ${source.quantity}, tried to remove ${quantity}`,
         );
         throw new BadRequestException(
@@ -169,7 +171,7 @@ export class StockService {
   private async ensureProductExists(tx: any, productId: string) {
     const product = await tx.product.findUnique({ where: { id: productId } });
     if (!product) {
-      this.logger.error(`Product ${productId} not found`);
+      this.logger.warn(`Product ${productId} not found`);
       throw new NotFoundException(`Product ${productId} not found`);
     }
   }
@@ -179,7 +181,7 @@ export class StockService {
       where: { id: warehouseId },
     });
     if (!warehouse) {
-      this.logger.error(`Warehouse ${warehouseId} not found`);
+      this.logger.warn(`Warehouse ${warehouseId} not found`);
       throw new NotFoundException(`Warehouse ${warehouseId} not found`);
     }
   }

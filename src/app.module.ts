@@ -4,8 +4,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
 import { WarehousesModule } from './warehouses/warehouses.module';
 import { StockModule } from './stock/stock.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, ProductsModule, WarehousesModule, StockModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, ProductsModule, WarehousesModule, StockModule, InventoryModule],
 })
 export class AppModule {}
