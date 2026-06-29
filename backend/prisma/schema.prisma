@@ -63,3 +63,10 @@ model StockMovement {
   fromWarehouse Warehouse? @relation("FromWarehouse", fields: [fromWarehouseId], references: [id])
   toWarehouse   Warehouse? @relation("ToWarehouse", fields: [toWarehouseId], references: [id])
 }
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
